@@ -23,7 +23,7 @@ app = FastAPI()
 app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY,
-    same_site="none",
+    same_site="lax",
     https_only=True,
 )
 
@@ -53,7 +53,7 @@ async def home(request: Request):
 
 @app.get("/login")
 async def login(request: Request):
-    redirect_uri = os.getenv("REDIRECT_URI")
+    redirect_uri = "https://google-calendar-qp97.onrender.com/auth/callback"
 
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
@@ -95,6 +95,7 @@ async def get_events(request: Request):
         token_uri="https://oauth2.googleapis.com/token",
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar.readonly"],
     )
 
     service = build("calendar", "v3", credentials=creds)
@@ -156,5 +157,5 @@ async def ui(request: Request):
     user = {"logged_in": True, "token": token.get("access_token")}
 
     return templates.TemplateResponse(
-        "index.html", {"request": request, "user": str(request.session.get("user"))}
+        "index.html", {"request": request, "user": request.session.get("user")}
     )
