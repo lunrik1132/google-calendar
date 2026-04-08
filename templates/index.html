@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google календар</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            color: rgb(0, 0, 0);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 40px;
+        }
+
+        .card {
+            background: #ceeaff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn-login {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-load {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .event {
+            background: #f3f8ff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        a {
+            color: #93c5fd;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- <div class="card">
+
+        <button class="btn-login" onclick="login()">Login with Google</button>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+        <button class="btn-load" onclick="loadEvents()">Load Events</button>
+    </div> -->
+
+    <div class="card">
+        <h2>Події</h2>
+        <div id="events"></div>
+    </div>
+
+</div>
+
+<script>
+async function checkStatus() {
+    const res = await fetch("/info");
+    const data = await res.json();
+
+    if (data.user) {
+        document.getElementById("status").innerText =
+            "Logged in as: " + (data.user.email || "User");
+    } else {
+        document.getElementById("status").innerText =
+            "Not logged in";
+    }
+}
+
+function login() {
+    window.location.href = "/login";
+}
+
+function logout() {
+    window.location.href = "/logout";
+}
+
+async function loadEvents() {
+    const res = await fetch("/events");
+    const data = await res.json();
+
+    const container = document.getElementById("events");
+    container.innerHTML = "";
+
+    if (!Array.isArray(data)) {
+        container.innerHTML = "<p>Помилка</p>";
+        return;
+    }
+
+    if (data.length === 0) {
+        container.innerHTML = "<p>Нічого не знайдено</p>";
+        return;
+    }
+
+    data.forEach(ev => {
+        const div = document.createElement("div");
+        div.className = "event";
+        
+        if (ev.summary != "День рождения"){
+            div.innerHTML = `
+                <b>${ev.summary || ""}</b><br>
+                🕒 ${ev.start || ""}<br>
+                📝 ${ev.description || ""}
+            `;
+    
+            container.appendChild(div);
+        }
+    });
+}
+
+checkStatus();
+loadEvents();
+</script>
+
+</body>
+</html>
