@@ -5,7 +5,7 @@ from authlib.integrations.starlette_client import OAuth
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from starlette.middleware.sessions import SessionMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
 from dateutil import parser
@@ -153,25 +153,4 @@ async def ui(request: Request):
     if not token or not isinstance(token, dict):
         return RedirectResponse("/login")
 
-    user = request.session.get("user")
-
-    safe_user = {
-        "name": user.get("name") if user else None,
-        "email": user.get("email") if user else None,
-        "picture": user.get("picture") if user else None,
-    }
-
-    print("TEMPLATES EXISTS:", os.path.exists("templates"))
-    print("FILES:", os.listdir("."))
-    print(
-        "TEMPLATES FILES:",
-        os.listdir("templates") if os.path.exists("templates") else "NO FOLDER",
-    )
-    print("SESSION TYPE:", type(request.session))
-    print("SESSION CONTENT:", request.session)
-    print("USER TYPE:", type(request.session.get("user")))
-    print("USER CONTENT:", request.session.get("user"))
-
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "user": safe_user}
-    )
+    return FileResponse("templates/index.html")
