@@ -144,7 +144,7 @@ async def logout(request: Request):
     return {"message": "Logged out"}
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def ui(request: Request):
     print("SESSION:", request.session)
     print("USER:", request.session.get("user"))
@@ -156,9 +156,12 @@ async def ui(request: Request):
 
     user = {"logged_in": True, "token": token.get("access_token")}
 
-    print("TEMPLATE CHECK:", type("index.html"), "index.html")
-    print("TEMPLATES DIR:", templates.directory)
-    print(os.listdir("templates"))
+    print("TEMPLATES EXISTS:", os.path.exists("templates"))
+    print("FILES:", os.listdir("."))
+    print(
+        "TEMPLATES FILES:",
+        os.listdir("templates") if os.path.exists("templates") else "NO FOLDER",
+    )
     return templates.TemplateResponse(
         "index.html", {"request": request, "user": request.session.get("user")}
     )
