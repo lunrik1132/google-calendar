@@ -10,14 +10,12 @@ from fastapi.templating import Jinja2Templates
 from datetime import datetime
 from dateutil import parser
 
-# ====== НАСТРОЙКИ ======
-# CLIENT_ID = "xxx"
-# CLIENT_SECRET = "xxx"
-# SECRET_KEY = "xxx"
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
 
 templates = Jinja2Templates(directory="templates")
 
-# ====== APP ======
 app = FastAPI()
 
 
