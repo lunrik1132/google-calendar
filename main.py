@@ -146,15 +146,18 @@ async def logout(request: Request):
 
 @app.get("/")
 async def ui(request: Request):
-    print("SESSION:", request.session)
-    print("USER:", request.session.get("user"))
-    print("TOKEN:", request.session.get("token"))
     token = request.session.get("token")
 
     if not token or not isinstance(token, dict):
         return RedirectResponse("/login")
 
-    user = {"logged_in": True, "token": token.get("access_token")}
+    user = request.session.get("user")
+
+    safe_user = {
+        "name": user.get("name") if user else None,
+        "email": user.get("email") if user else None,
+        "picture": user.get("picture") if user else None,
+    }
 
     print("TEMPLATES EXISTS:", os.path.exists("templates"))
     print("FILES:", os.listdir("."))
@@ -162,6 +165,9 @@ async def ui(request: Request):
         "TEMPLATES FILES:",
         os.listdir("templates") if os.path.exists("templates") else "NO FOLDER",
     )
-    return templates.TemplateResponse(
-        "index.html", {"request": request, "user": request.session.get("user")}
-    )
+    print("SESSION TYPE:", type(request.session))
+    print("SESSION CONTENT:", request.session)
+    print("USER TYPE:", type(request.session.get("user")))
+    print("USER CONTENT:", request.session.get("user"))
+
+    return templates.TemplateResponse("index.html", {"user": safe_user})
