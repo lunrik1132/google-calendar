@@ -131,7 +131,10 @@ async def logout(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 async def ui(request: Request):
-    user = request.session.get("user")
+    user = {
+        "logged_in": True,
+        "token": request.session.get("token", {}).get("access_token"),
+    }
 
     if not user:
         return RedirectResponse(url="/login")
