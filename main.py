@@ -11,9 +11,9 @@ from datetime import datetime
 from dateutil import parser
 
 # ====== НАСТРОЙКИ ======
-CLIENT_ID = "564761441203-4efvia5e3feqjbcj4sumtp51h6jl0ke9.apps.googleusercontent.com"
-CLIENT_SECRET = "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"
-SECRET_KEY = "SUPER_SECRET_KEY"
+CLIENT_ID = "xxx"
+CLIENT_SECRET = "xxx"
+SECRET_KEY = "xxx"
 
 templates = Jinja2Templates(directory="templates")
 
