@@ -54,7 +54,7 @@ async def home(request: Request):
 
 @app.get("/login")
 async def login(request: Request):
-    redirect_uri = "http://localhost:8000/auth/callback"
+    redirect_uri = "https://google-calendar-qp97.onrender.com/auth/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
