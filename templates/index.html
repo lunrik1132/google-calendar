@@ -81,18 +81,18 @@
 </div>
 
 <script>
-async function checkStatus() {
-    const res = await fetch("/info");
-    const data = await res.json();
+// async function checkStatus() {
+//     const res = await fetch("/info");
+//     const data = await res.json();
 
-    if (data.user) {
-        document.getElementById("status").innerText =
-            "Logged in as: " + (data.user.email || "User");
-    } else {
-        document.getElementById("status").innerText =
-            "Not logged in";
-    }
-}
+//     if (data.user) {
+//         document.getElementById("status").innerText =
+//             "Logged in as: " + (data.user.email || "User");
+//     } else {
+//         document.getElementById("status").innerText =
+//             "Not logged in";
+//     }
+// }
 
 function login() {
     window.location.href = "/login";
@@ -135,7 +135,7 @@ async function loadEvents() {
     });
 }
 
-checkStatus();
+// checkStatus();
 loadEvents();
 </script>
 
