@@ -11,9 +11,9 @@ from datetime import datetime
 from dateutil import parser
 
 # ====== НАСТРОЙКИ ======
-CLIENT_ID = "xxx"
-CLIENT_SECRET = "xxx"
-SECRET_KEY = "xxx"
+# CLIENT_ID = "xxx"
+# CLIENT_SECRET = "xxx"
+# SECRET_KEY = "xxx"
 
 templates = Jinja2Templates(directory="templates")
 
