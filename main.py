@@ -62,11 +62,15 @@ async def login(request: Request):
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
 
-    userinfo = await oauth.google.parse_id_token(request, token) or {}
+    userinfo = token.get("userinfo")
+
+    if not userinfo:
+        userinfo = {}
 
     request.session["token"] = {
         "access_token": token.get("access_token"),
         "refresh_token": token.get("refresh_token"),
+        "id_token": token.get("id_token"),
     }
 
     request.session["user"] = {
