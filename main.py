@@ -13,6 +13,7 @@ from dateutil import parser
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
+redirect_uri = os.getenv("REDIRECT_URI")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -52,7 +53,6 @@ async def home(request: Request):
 
 @app.get("/login")
 async def login(request: Request):
-    redirect_uri = "https://google-calendar-qp97.onrender.com/auth/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
