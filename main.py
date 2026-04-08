@@ -23,8 +23,8 @@ app = FastAPI()
 app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY,
-    same_site="lax",
-    https_only=False,
+    same_site="none",
+    https_only=True,
 )
 
 oauth = OAuth()
@@ -65,8 +65,12 @@ async def auth_callback(request: Request):
     userinfo = token.get("userinfo") or await oauth.google.parse_id_token(
         request, token
     )
+    request.session["token"] = {
+        "access_token": token.get("access_token"),
+        "refresh_token": token.get("refresh_token"),
+        "id_token": token.get("id_token"),
+    }
 
-    request.session["token"] = token
     request.session["user"] = {
         "name": userinfo.get("name"),
         "email": userinfo.get("email"),
@@ -141,12 +145,9 @@ async def logout(request: Request):
 async def ui(request: Request):
     token = request.session.get("token")
 
-    if not token:
+    if not token or not isinstance(token, dict):
         return RedirectResponse("/login")
 
     user = {"logged_in": True, "token": token.get("access_token")}
-
-    if not user:
-        return RedirectResponse(url="/login")
 
     return templates.TemplateResponse("index.html", {"request": request, "user": user})
