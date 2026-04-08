@@ -62,13 +62,11 @@ async def login(request: Request):
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
 
-    userinfo = token.get("userinfo") or await oauth.google.parse_id_token(
-        request, token
-    )
+    userinfo = await oauth.google.parse_id_token(request, token) or {}
+
     request.session["token"] = {
         "access_token": token.get("access_token"),
         "refresh_token": token.get("refresh_token"),
-        "id_token": token.get("id_token"),
     }
 
     request.session["user"] = {
@@ -77,7 +75,7 @@ async def auth_callback(request: Request):
         "picture": userinfo.get("picture"),
     }
 
-    return RedirectResponse(url="/")
+    return RedirectResponse("/")
 
 
 @app.get("/events")
@@ -143,6 +141,9 @@ async def logout(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 async def ui(request: Request):
+    print("SESSION:", request.session)
+    print("USER:", request.session.get("user"))
+    print("TOKEN:", request.session.get("token"))
     token = request.session.get("token")
 
     if not token or not isinstance(token, dict):
@@ -150,4 +151,6 @@ async def ui(request: Request):
 
     user = {"logged_in": True, "token": token.get("access_token")}
 
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "user": str(request.session.get("user"))}
+    )
