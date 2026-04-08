@@ -62,8 +62,16 @@ async def login(request: Request):
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
 
+    userinfo = token.get("userinfo") or await oauth.google.parse_id_token(
+        request, token
+    )
+
     request.session["token"] = token
-    request.session["user"] = {"access_token": token["access_token"]}
+    request.session["user"] = {
+        "name": userinfo.get("name"),
+        "email": userinfo.get("email"),
+        "picture": userinfo.get("picture"),
+    }
 
     return RedirectResponse(url="/")
 
