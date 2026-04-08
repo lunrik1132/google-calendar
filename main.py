@@ -17,6 +17,8 @@ redirect_uri = os.getenv("REDIRECT_URI")
 
 templates = Jinja2Templates(directory="templates")
 
+templates.env.cache = {}
+
 app = FastAPI()
 
 
@@ -170,4 +172,6 @@ async def ui(request: Request):
     print("USER TYPE:", type(request.session.get("user")))
     print("USER CONTENT:", request.session.get("user"))
 
-    return templates.TemplateResponse("index.html", {"user": safe_user})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "user": safe_user}
+    )
