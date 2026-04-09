@@ -6,18 +6,14 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.templating import Jinja2Templates
 from datetime import datetime
 from dateutil import parser
+from google.auth.transport.requests import Request as GoogleRequest
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
 redirect_uri = os.getenv("REDIRECT_URI")
-
-templates = Jinja2Templates(directory="templates")
-
-templates.env.cache = {}
 
 app = FastAPI()
 
@@ -59,7 +55,12 @@ async def home(request: Request):
 async def login(request: Request):
     redirect_uri = "https://google-calendar-qp97.onrender.com/auth/callback"
 
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(
+        request,
+        redirect_uri,
+        access_type="offline",  # 👈 сюда
+        prompt="consent",  # 👈 сюда
+    )
 
 
 @app.get("/auth/callback")
