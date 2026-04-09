@@ -39,6 +39,8 @@ oauth.register(
     client_kwargs={
         "scope": "openid email profile https://www.googleapis.com/auth/calendar.readonly",
         "response_type": "code",
+        "access_type": "offline",
+        "prompt": "consent",
     },
 )
 

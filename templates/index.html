@@ -106,6 +106,8 @@ async function loadEvents() {
     const res = await fetch("/events");
     const data = await res.json();
 
+    if (data.error === "auth_expired") { window.location.href = "/login"; }
+
     const container = document.getElementById("events");
     container.innerHTML = "";
 
