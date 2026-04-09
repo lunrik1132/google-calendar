@@ -159,3 +159,8 @@ async def ui(request: Request):
         return RedirectResponse("/login")
 
     return FileResponse("templates/index.html")
+
+
+@app.get("/health")
+async def health():
+    return "OK"
