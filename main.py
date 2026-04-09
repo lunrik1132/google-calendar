@@ -89,7 +89,7 @@ async def auth_callback(request: Request):
 @app.get("/events")
 async def get_events(request: Request):
     token = request.session.get("token")
-
+    print("TOKEN:", token)
     if not token:
         return RedirectResponse(url="/login")
 
