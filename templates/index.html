@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google календар</title>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: white;
+            background: #ceeaff;
             color: rgb(0, 0, 0);
             margin: 0;
             padding: 0;
@@ -16,7 +17,7 @@
         .container {
             max-width: 800px;
             margin: auto;
-            padding: 40px;
+            padding: 0;
         }
 
         .card {
@@ -26,27 +27,30 @@
             margin-bottom: 20px;
         }
 
+        .event-info {
+            width: 100%;
+        }
+
         button {
-            padding: 10px 15px;
+            width: 100%;
+            padding: 15px 10px 15px 10px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-right: 10px;
         }
 
-        .btn-login {
-            background: #22c55e;
-            color: white;
+        .btns {
+            margin-left: 5px;
+            
+        }
+        
+        .btn-delete {
+            background-color: rgb(243, 176, 176);
         }
 
-        .btn-logout {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-load {
-            background: #3b82f6;
-            color: white;
+        .btn-edit {
+            background-color: #e0e0e0;
+            margin-bottom: 5px;
         }
 
         .event {
@@ -54,6 +58,7 @@
             padding: 10px;
             margin-top: 10px;
             border-radius: 8px;
+            display: flex;
         }
 
         a {
@@ -65,19 +70,10 @@
 <body>
 
 <div class="container">
-
-    <!-- <div class="card">
-
-        <button class="btn-login" onclick="login()">Login with Google</button>
-        <button class="btn-logout" onclick="logout()">Logout</button>
-        <button class="btn-load" onclick="loadEvents()">Load Events</button>
-    </div> -->
-
     <div class="card">
         <h2>Події</h2>
         <div id="events"></div>
     </div>
-
 </div>
 
 <script>
@@ -127,9 +123,14 @@ async function loadEvents() {
         
         if (ev.summary != "День рождения"){
             div.innerHTML = `
+            <div class = event-info>
                 <b>${ev.summary || ""}</b><br>
                 🕒 ${ev.start || ""}<br>
-                📝 ${ev.description || ""}
+                📝 ${ev.description || ""}</div>
+            <div class=btns>
+                <button class=btn-edit>Редагувати</button>
+                <button class=btn-delete>Видалити</button>
+                </div>
             `;
     
             container.appendChild(div);

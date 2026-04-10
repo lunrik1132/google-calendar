@@ -10,6 +10,10 @@ from datetime import datetime
 from dateutil import parser
 from google.auth.transport.requests import Request as GoogleRequest
 
+# CLIENT_ID = "564761441203-4efvia5e3feqjbcj4sumtp51h6jl0ke9.apps.googleusercontent.com"
+# CLIENT_SECRET = "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"
+# SECRET_KEY = "SUPER_SECRET_KEY"
+
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
@@ -54,12 +58,13 @@ async def home(request: Request):
 @app.get("/login")
 async def login(request: Request):
     redirect_uri = "https://google-calendar-qp97.onrender.com/auth/callback"
+    # redirect_uri = "http://127.0.0.1:8000/auth/callback"
 
     return await oauth.google.authorize_redirect(
         request,
         redirect_uri,
-        access_type="offline",  # 👈 сюда
-        prompt="consent",  # 👈 сюда
+        access_type="offline",
+        prompt="consent",
     )
 
 
