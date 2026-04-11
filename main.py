@@ -10,10 +10,6 @@ from datetime import datetime
 from dateutil import parser
 from google.auth.transport.requests import Request as GoogleRequest
 
-# CLIENT_ID = "564761441203-4efvia5e3feqjbcj4sumtp51h6jl0ke9.apps.googleusercontent.com"
-# CLIENT_SECRET = "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"
-# SECRET_KEY = "SUPER_SECRET_KEY"
-
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
