@@ -33,7 +33,7 @@ oauth.register(
     client_secret=CLIENT_SECRET,
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={
-        "scope": "openid email profile https://www.googleapis.com/auth/calendar.readonly",
+        "scope": "openid email profile https://www.googleapis.com/auth/calendar",
         "response_type": "code",
         "access_type": "offline",
         "prompt": "consent",
@@ -135,6 +135,7 @@ async def get_events(request: Request):
 
             result.append(
                 {
+                    "id": event.get("id"),
                     "summary": event.get("summary"),
                     "start": dt.strftime("%d-%m-%Y"),
                     "description": event.get("description"),
@@ -166,3 +167,102 @@ async def ui(request: Request):
 @app.get("/health")
 async def health():
     return "OK"
+
+
+@app.delete("/events/{event_id}")
+async def delete_event(event_id: str, request: Request):
+    token = request.session.get("token")
+
+    if not token:
+        return JSONResponse({"error": "not_authenticated"}, status_code=401)
+
+    creds = Credentials(
+        token=token["access_token"],
+        refresh_token=token.get("refresh_token"),
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar"],
+    )
+
+    service = build("calendar", "v3", credentials=creds)
+
+    try:
+        service.events().delete(calendarId="primary", eventId=event_id).execute()
+
+        return {"status": "deleted"}
+
+    except Exception:
+        return JSONResponse({"error": "delete_failed"}, status_code=500)
+
+
+@app.put("/events/{event_id}")
+async def update_event(event_id: str, request: Request):
+    token = request.session.get("token")
+    body = await request.json()
+
+    creds = Credentials(
+        token=token["access_token"],
+        refresh_token=token.get("refresh_token"),
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar"],
+    )
+
+    service = build("calendar", "v3", credentials=creds)
+
+    try:
+        event = service.events().get(calendarId="primary", eventId=event_id).execute()
+
+        event["summary"] = body.get("summary")
+        event["description"] = body.get("description")
+
+        if body.get("date"):
+            event["start"] = {"date": body["date"]}
+            event["end"] = {"date": body["date"]}
+
+        updated_event = (
+            service.events()
+            .update(calendarId="primary", eventId=event_id, body=event)
+            .execute()
+        )
+
+        return {"status": "updated"}
+
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
+@app.post("/events")
+async def create_event(request: Request):
+    token = request.session.get("token")
+    body = await request.json()
+
+    creds = Credentials(
+        token=token["access_token"],
+        refresh_token=token.get("refresh_token"),
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar"],
+    )
+
+    service = build("calendar", "v3", credentials=creds)
+
+    try:
+        event = {
+            "summary": body.get("summary"),
+            "description": body.get("description"),
+            "start": {"date": body.get("date")},
+            "end": {"date": body.get("date")},
+        }
+
+        created_event = (
+            service.events().insert(calendarId="primary", body=event).execute()
+        )
+
+        return {"status": "created", "id": created_event["id"]}
+
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
