@@ -102,7 +102,7 @@ async def get_events(request: Request):
             token_uri="https://oauth2.googleapis.com/token",
             client_id=CLIENT_ID,
             client_secret=CLIENT_SECRET,
-            scopes=["https://www.googleapis.com/auth/calendar.readonly"],
+            scopes=["https://www.googleapis.com/auth/calendar"],
         )
 
         service = build("calendar", "v3", credentials=creds)
