@@ -144,8 +144,8 @@ async def get_events(request: Request):
         print(result)
 
         return result
-    except Exception:
-        print(Exception)
+    except Exception as e:
+        print(e)
         return JSONResponse({"error": "auth_expired"}, status_code=401)
 
 
