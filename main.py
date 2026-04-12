@@ -95,57 +95,57 @@ async def get_events(request: Request):
     if not token:
         return RedirectResponse(url="/login")
 
-    try:
-        creds = Credentials(
-            token=token["access_token"],
-            refresh_token=token.get("refresh_token"),
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=CLIENT_ID,
-            client_secret=CLIENT_SECRET,
-            scopes=["https://www.googleapis.com/auth/calendar.readonly"],
+    # try:
+    creds = Credentials(
+        token=token["access_token"],
+        refresh_token=token.get("refresh_token"),
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        scopes=["https://www.googleapis.com/auth/calendar.readonly"],
+    )
+
+    service = build("calendar", "v3", credentials=creds)
+
+    events_result = (
+        service.events()
+        .list(
+            calendarId="primary",
+            maxResults=20,
+            singleEvents=True,
+            orderBy="startTime",
+            timeZone="Europe/Kyiv",
         )
+        .execute()
+    )
 
-        service = build("calendar", "v3", credentials=creds)
+    events = events_result.get("items", [])
 
-        events_result = (
-            service.events()
-            .list(
-                calendarId="primary",
-                maxResults=20,
-                singleEvents=True,
-                orderBy="startTime",
-                timeZone="Europe/Kyiv",
-            )
-            .execute()
+    result = []
+
+    for event in events:
+        start = event.get("start", {})
+
+        date_str = start.get("dateTime") or start.get("date")
+
+        if not date_str:
+            continue
+
+        dt = parser.parse(date_str)
+
+        result.append(
+            {
+                "id": event.get("id"),
+                "summary": event.get("summary"),
+                "start": dt.strftime("%d-%m-%Y"),
+                "description": event.get("description"),
+            }
         )
+    print(result)
 
-        events = events_result.get("items", [])
-
-        result = []
-
-        for event in events:
-            start = event.get("start", {})
-
-            date_str = start.get("dateTime") or start.get("date")
-
-            if not date_str:
-                continue
-
-            dt = parser.parse(date_str)
-
-            result.append(
-                {
-                    "id": event.get("id"),
-                    "summary": event.get("summary"),
-                    "start": dt.strftime("%d-%m-%Y"),
-                    "description": event.get("description"),
-                }
-            )
-        print(result)
-
-        return result
-    except Exception:
-        return JSONResponse({"error": "auth_expired"}, status_code=401)
+    return result
+    # except Exception:
+    #     return JSONResponse({"error": "auth_expired"}, status_code=401)
 
 
 @app.get("/logout")
