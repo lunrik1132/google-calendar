@@ -152,7 +152,7 @@ async def get_events(request: Request):
 @app.get("/logout")
 async def logout(request: Request):
     request.session.clear()
-    return {"message": "Logged out"}
+    return RedirectResponse("/login")
 
 
 @app.get("/")
